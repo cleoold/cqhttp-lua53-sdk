@@ -55,5 +55,28 @@ end)
 ```
 完整实例可以在 [这里](example/demo.lua) 看到，包含 `subscribe` 和 `api` 的使用方法。
 
+# Websocket 客户端
+*   lua-http 的 ws 客户端不稳定，所以不建议使用（至少在 wsl 上不建议）
+*   https://github.com/daurnimator/lua-http/issues/140
+*   https://github.com/daurnimator/lua-http/issues/168
+
+假设配置文件如下（仅保留有关联的部分）：
+```json
+{
+    "ws_host": "0.0.0.0",
+    "ws_port": 6700,
+    "use_ws": true,
+    "access_token": "accesstoken or nil",
+}
+```
+`lcqhttp.ws` 模块 可以创建 ws 客户端
+```lua
+local beta = require 'lcqhttp.ws'.LCQHTTP_WS_CLIENT:new({
+    ws_uri = 'ws://127.0.0.1:6700',
+    accessToken = 'accesstoken or nil', -- 可选项
+})
+-- 方法相同
+```
+
 # License
 MIT

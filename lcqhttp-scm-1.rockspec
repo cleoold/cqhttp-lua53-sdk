@@ -25,8 +25,10 @@ build = {
         ["lcqhttp.event"] = "lcqhttp/event.lua",
         ["lcqhttp.http"] = "lcqhttp/http.lua",
         ["lcqhttp.httpcontext"] = "lcqhttp/httpcontext.lua",
+        ["lcqhttp.lcqhttp_base"] = "lcqhttp/lcqhttp_base.lua",
         ["lcqhttp.log"] = "lcqhttp/log.lua",
         ["lcqhttp.message"] = "lcqhttp/message.lua",
-        ["lcqhttp.util"] = "lcqhttp/util.lua"
+        ["lcqhttp.util"] = "lcqhttp/util.lua",
+        ["lcqhttp.ws"] = "lcqhttp/ws.lua"
     }
 }
