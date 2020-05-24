@@ -19,14 +19,14 @@ local createClass = function(fields, parent)
 
     cls.__super = parent
     cls.__index = cls
-    local function new(...)
+    function cls:new(...)
         local o = {}
         setmetatable(o, cls)
         o:constructor(...)
         return o
     end
 
-    return new
+    return cls
 end
 
 local timestr = function()

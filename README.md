@@ -21,21 +21,21 @@ luarocks install --server=https://luarocks.org/dev lcqhttp
 
 # 基本使用（HTTP）
 假设用户已经安装且配置了 [CQHTTP](https://cqhttp.cc/)，而且设置文件如下（仅保留有关联的部分）：
-```json
+```js
 {
     "host": "0.0.0.0",
     "port": 8764,      // cqhttp 插件端口
     "use_http": true,
-    "post_url": "http://localhost:8765",  // lua 服务端地址
+    "post_url": "http://127.0.0.1:8765",  // lua 服务端地址
     "access_token": "accesstoken or nil", // 或者为空字符串
     "secret": "secret or nil",            // 或者为空字符串
 }
 ```
-与它相应的 lua 配置如下：
+使用 `lcqhttp.http` 模块，与它相应的 lua 配置如下：
 ```lua
-local arora = require 'lcqhttp.http'.LCQHTTP_HTTP({
-    apiRoot = 'http://localhost:8764',
-    host = 'localhost',
+local arora = require 'lcqhttp.http'.LCQHTTP_HTTP:new({
+    apiRoot = 'http://127.0.0.1:8764',
+    host = '127.0.0.1',
     port = '8765',
     accessToken = 'accesstoken or nil', -- 可选项
     secret = 'secret or nil' -- 可选项

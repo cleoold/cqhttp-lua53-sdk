@@ -1,4 +1,3 @@
-local cqueues = require 'cqueues'
 local lunajson = require 'lunajson'
 local sha1 = require 'sha1'
 local http = {
@@ -6,13 +5,14 @@ local http = {
 }
 local lcqhttp = {
     event = require 'lcqhttp.event',
+    lcqhttp_base = require 'lcqhttp.lcqhttp_base',
     log = require 'lcqhttp.log',
     httpcontext = require 'lcqhttp.httpcontext',
     util = require 'lcqhttp.util'
 }
 
 local LcqhttpApiRequester = lcqhttp.util.createClass {
-    -- 用于调用 api 的类
+    -- 用于调用 api 的类，可以单独使用
     constructor = function(self, opt)
         self.apiRoot = opt.apiRoot
         self.accessToken = lcqhttp.util.NULL
@@ -20,10 +20,11 @@ local LcqhttpApiRequester = lcqhttp.util.createClass {
             self.accessToken = 'Token '..opt.accessToken
         end
     end,
+    -- 调用 api，返回结果
     api = function(self, apiname, content)
         local path = self.apiRoot..'/'..apiname
         local str = lunajson.encode(content)
-        local task = lcqhttp.httpcontext.OutgoingHttpRequest(path, 'POST', str)
+        local task = lcqhttp.httpcontext.OutgoingHttpRequest:new(path, 'POST', str)
         task.req.headers:upsert('Content-Type', 'application/json')
         if self.accessToken then
             task.req.headers:upsert('Authorization', self.accessToken)
@@ -49,33 +50,19 @@ local LcqhttpApiRequester = lcqhttp.util.createClass {
     end,
 }
 
-local LCQHTTP_HTTP = lcqhttp.util.createClass {
+local LCQHTTP_HTTP = lcqhttp.util.createClass ({
 
     -- 创建一个 http bot 对象
     constructor = function(self, opt)
-        self.apirequester = LcqhttpApiRequester({
+        self.__super.constructor(self, opt)
+        self.apirequester = LcqhttpApiRequester:new({
             apiRoot = opt.apiRoot,
             accessToken = opt.accessToken
         })
         self.secret = opt.secret or lcqhttp.util.NULL
         self.host = opt.host
         self.port = opt.port
-        self.eventloop = opt.eventloop or cqueues.new()
-
-        self.bot = self
         self.server = lcqhttp.util.NULL
-        -- https://cqhttp.cc/docs/4.15/#/Post
-        self.callbacks = { ['*'] = {} }
-        for _, type in pairs(lcqhttp.event.types) do self.callbacks[type] = {} end
-    end,
-
-    -- 添加事件监听器
-    subscribe = function(self, post_type, cb)
-        if self.callbacks[post_type] == nil then
-            error('subscribe only accepts one of these types: *, '..table.concat(lcqhttp.event.types, ','))
-        end
-        table.insert(self.callbacks[post_type], cb)
-        return self
     end,
 
         -- 开始事件循环
@@ -92,14 +79,9 @@ local LCQHTTP_HTTP = lcqhttp.util.createClass {
         return self
     end,
 
-    -- 调用 cqhttp 插件 api，返回响应值或 nil
+    -- POST 调用 cqhttp 插件 api，返回响应值或 nil
     api = function(self, apiname, content)
         return self.apirequester:api(apiname, content)
-    end,
-
-    -- 立即生成一个异步调用并且执行，该函数会立即返回
-    detach = function(self, f)
-        self.eventloop:wrap(f)
     end,
 
     _handle_posted_event = function(self, httpctx)
@@ -118,6 +100,7 @@ local LCQHTTP_HTTP = lcqhttp.util.createClass {
             return
         end
 
+        -- response body to be sent back
         local rescontent = {}
         for _, f in pairs(self.callbacks['*']) do f(self, event, rescontent) end
         for _, f in pairs(self.callbacks[event['post_type']]) do f(self, event, rescontent) end
@@ -131,9 +114,11 @@ local LCQHTTP_HTTP = lcqhttp.util.createClass {
         httpctx:respond('404')
     end,
 
+    -- 接受所有 http 请求，封装后分发给各路由
     _handle = function(self, server, stream)
-        local httpctx = lcqhttp.httpcontext.IncomingHttpRequest(stream)
+        local httpctx = lcqhttp.httpcontext.IncomingHttpRequest:new(stream)
         httpctx.res.headers:append("Access-Control-Allow-Origin", "*")
+        -- 只接受插件发送的 post 请求
         if httpctx.req.headers:get ':method' == 'POST' then
             self:_handle_posted_event(httpctx)
         else
@@ -146,7 +131,8 @@ local LCQHTTP_HTTP = lcqhttp.util.createClass {
         -- for explanation for parameters
         lcqhttp.log.error('%s : %s', tostring(context), err and tostring(err) or '')
     end,
-}
+
+}, lcqhttp.lcqhttp_base.LCQHTTP_BASE)
 
 return {
     LcqhttpApiRequester = LcqhttpApiRequester,
