@@ -11,15 +11,52 @@ local lcqhttp = {
     util = require 'lcqhttp.util'
 }
 
-local LCQHTTP_HTTP = lcqhttp.util.createClass {
-
-    -- 创建一个 http bot 对象
+local LcqhttpApiRequester = lcqhttp.util.createClass {
+    -- 用于调用 api 的类
     constructor = function(self, opt)
         self.apiRoot = opt.apiRoot
         self.accessToken = lcqhttp.util.NULL
         if opt.accessToken then
             self.accessToken = 'Token '..opt.accessToken
         end
+    end,
+    api = function(self, apiname, content)
+        local path = self.apiRoot..'/'..apiname
+        local str = lunajson.encode(content)
+        local task = lcqhttp.httpcontext.OutgoingHttpRequest(path, 'POST', str)
+        task.req.headers:upsert('Content-Type', 'application/json')
+        if self.accessToken then
+            task.req.headers:upsert('Authorization', self.accessToken)
+        end
+        task:go()
+
+        if not task.responded then
+            lcqhttp.log.error('unable to connect %s: connection timed out', path)
+            return
+        end
+        local status = task.res.headers:get ':status'
+        if status ~= '200' or task.res.body == nil then
+            lcqhttp.log.error('unable to post %s: status code %d', path, status)
+            return
+        end
+        local resj = lunajson.decode(task.res.body)
+        if resj['status'] ~= 'ok' and resj['status'] ~= 'async' then
+            lcqhttp.log.error('action failed: %d', resj['retcode'])
+            return
+        end
+
+        return resj['data']
+    end,
+}
+
+local LCQHTTP_HTTP = lcqhttp.util.createClass {
+
+    -- 创建一个 http bot 对象
+    constructor = function(self, opt)
+        self.apirequester = LcqhttpApiRequester({
+            apiRoot = opt.apiRoot,
+            accessToken = opt.accessToken
+        })
         self.secret = opt.secret or lcqhttp.util.NULL
         self.host = opt.host
         self.port = opt.port
@@ -57,31 +94,7 @@ local LCQHTTP_HTTP = lcqhttp.util.createClass {
 
     -- 调用 cqhttp 插件 api，返回响应值或 nil
     api = function(self, apiname, content)
-        local path = self.apiRoot..'/'..apiname
-        local str = lunajson.encode(content)
-        local task = lcqhttp.httpcontext.OutgoingHttpRequest(path, 'POST', str)
-        task.req.headers:upsert('Content-Type', 'application/json')
-        if self.accessToken then
-            task.req.headers:upsert('Authorization', self.accessToken)
-        end
-        task:go()
-
-        if not task.responded then
-            lcqhttp.log.error('unable to connect %s: connection timed out', path)
-            return
-        end
-        local status = task.res.headers:get ':status'
-        if status ~= '200' or task.res.body == nil then
-            lcqhttp.log.error('unable to post %s: status code %d', path, status)
-            return
-        end
-        local resj = lunajson.decode(task.res.body)
-        if resj['status'] ~= 'ok' and resj['status'] ~= 'async' then
-            lcqhttp.log.error('action failed: %d', resj['retcode'])
-            return
-        end
-
-        return resj['data']
+        return self.apirequester:api(apiname, content)
     end,
 
     -- 立即生成一个异步调用并且执行，该函数会立即返回
@@ -136,5 +149,6 @@ local LCQHTTP_HTTP = lcqhttp.util.createClass {
 }
 
 return {
+    LcqhttpApiRequester = LcqhttpApiRequester,
     LCQHTTP_HTTP = LCQHTTP_HTTP
 }
