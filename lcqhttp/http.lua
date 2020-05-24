@@ -55,7 +55,7 @@ local LCQHTTP_HTTP = lcqhttp.util.createClass {
         return self
     end,
 
-    -- 调用 cqhttp 插件 api
+    -- 调用 cqhttp 插件 api，返回响应值或 nil
     api = function(self, apiname, content)
         local path = self.apiRoot..'/'..apiname
         local str = lunajson.encode(content)
@@ -80,6 +80,8 @@ local LCQHTTP_HTTP = lcqhttp.util.createClass {
             lcqhttp.log.error('action failed: %d', resj['retcode'])
             return
         end
+
+        return resj['data']
     end,
 
     -- 立即生成一个异步调用并且执行，该函数会立即返回
