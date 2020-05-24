@@ -23,9 +23,9 @@ local LCQHTTP_HTTP = lcqhttp.util.createClass {
         self.secret = opt.secret or lcqhttp.util.NULL
         self.host = opt.host
         self.port = opt.port
+        self.eventloop = opt.eventloop or cqueues.new()
 
         self.bot = self
-        self.eventloop = cqueues.new()
         self.server = lcqhttp.util.NULL
         -- https://cqhttp.cc/docs/4.15/#/Post
         self.callbacks = { ['*'] = {} }
