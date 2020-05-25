@@ -24,7 +24,7 @@ local LcqhttpApiRequester = lcqhttp.util.createClass {
     api = function(self, apiname, content)
         local path = self.apiRoot..'/'..apiname
         local str = lunajson.encode(content)
-        local task = lcqhttp.httpcontext.OutgoingHttpRequest:new(path, 'POST', str)
+        local task = lcqhttp.httpcontext.OutgoingHttpRequest.new(path, 'POST', str)
         task.req.headers:upsert('Content-Type', 'application/json')
         if self.accessToken then
             task.req.headers:upsert('Authorization', self.accessToken)
@@ -55,7 +55,7 @@ local LCQHTTP_HTTP = lcqhttp.util.createClass ({
     -- 创建一个 http bot 对象
     constructor = function(self, opt)
         self.__super.constructor(self, opt)
-        self.apirequester = LcqhttpApiRequester:new({
+        self.apirequester = LcqhttpApiRequester.new({
             apiRoot = opt.apiRoot,
             accessToken = opt.accessToken
         })
@@ -116,7 +116,7 @@ local LCQHTTP_HTTP = lcqhttp.util.createClass ({
 
     -- 接受所有 http 请求，封装后分发给各路由
     _handle = function(self, server, stream)
-        local httpctx = lcqhttp.httpcontext.IncomingHttpRequest:new(stream)
+        local httpctx = lcqhttp.httpcontext.IncomingHttpRequest.new(stream)
         httpctx.res.headers:append("Access-Control-Allow-Origin", "*")
         -- 只接受插件发送的 post 请求
         if httpctx.req.headers:get ':method' == 'POST' then

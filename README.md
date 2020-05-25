@@ -33,7 +33,7 @@ luarocks install --server=https://luarocks.org/dev lcqhttp
 ```
 使用 `lcqhttp.http` 模块，与它相应的 lua 配置如下：
 ```lua
-local arora = require 'lcqhttp.http'.LCQHTTP_HTTP:new({
+local arora = require 'lcqhttp.http'.LCQHTTP_HTTP.new({
     apiRoot = 'http://127.0.0.1:8764',
     host = '127.0.0.1',
     port = '8765',
@@ -72,7 +72,7 @@ end)
 ```
 `lcqhttp.ws` 模块 可以创建 ws 客户端
 ```lua
-local beta = require 'lcqhttp.ws'.LCQHTTP_WS_CLIENT:new({
+local beta = require 'lcqhttp.ws'.LCQHTTP_WS_CLIENT.new({
     ws_uri = 'ws://127.0.0.1:6700',
     accessToken = 'accesstoken or nil', -- 可选项
     recnn_interval = 1, -- 断线重连间隔时间。可选项，不填则不重连，掉线时退出程序

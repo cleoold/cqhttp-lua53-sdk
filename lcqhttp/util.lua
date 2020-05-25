@@ -19,7 +19,7 @@ local createClass = function(fields, parent)
 
     cls.__super = parent
     cls.__index = cls
-    function cls:new(...)
+    function cls.new(...)
         local o = {}
         setmetatable(o, cls)
         o:constructor(...)

@@ -4,7 +4,7 @@ local lcqhttp = {
 }
 
 -- 创建机器人
-local arora = lcqhttp.ws.LCQHTTP_WS_CLIENT:new({
+local arora = lcqhttp.ws.LCQHTTP_WS_CLIENT.new({
     ws_uri = 'ws://127.0.0.1:6700',
     accessToken = 'accesstoken or nil', -- 可选项
     recnn_interval = 1, -- 断线重连间隔时间。可选项，不填则不重连
