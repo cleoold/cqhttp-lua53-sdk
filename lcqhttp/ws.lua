@@ -23,8 +23,9 @@ local LCQHTTP_WS_CLIENT = lcqhttp.util.createClass ({
             self.api_uri = self.api_uri..'?access_token='..t
         end
         self.accessToken = opt.accessToken
+        self.recnn_interval = opt.recnn_interval or lcqhttp.util.NULL
+        self.conn_timeout = opt.conn_timeout or 5
         self.event_conn = lcqhttp.util.NULL
-        self.ws_timeout = 5
     end,
 
     -- 开始事件循环
@@ -35,14 +36,14 @@ local LCQHTTP_WS_CLIENT = lcqhttp.util.createClass ({
         self.eventloop:loop()
     end,
 
-    -- WS 调用 cqhttp api. 链接每次请求单独开设一个链接
+    -- WS 调用 cqhttp api. 每次请求单独开设一个链接
     api = function(self, apiname, content)
         self:detach(function()
             local t = lunajson.encode {
                 action = apiname, params = content
             }
             local conn = http.ws.new_from_uri(self.api_uri)
-            assert(conn:connect(5))
+            assert(conn:connect(self.conn_timeout))
             assert(conn:send(t))
             local recvd = assert(conn:receive())
             local resj = lunajson.decode(recvd)
@@ -56,16 +57,31 @@ local LCQHTTP_WS_CLIENT = lcqhttp.util.createClass ({
 
     -- 处理 /event
     _inconnect_event = function(self)
+        ::RECONNECT::
         self.event_conn = http.ws.new_from_uri(self.event_uri)
         -- this blocks program forever on wsl if target is offline:
         -- https://github.com/daurnimator/lua-http/issues/168
-        self.event_conn:connect(5)
+        if not self.event_conn:connect(self.conn_timeout) then goto ERROR end
         while true do
             -- https://github.com/daurnimator/lua-http/issues/140
-            local data = self.event_conn:receive()
+            -- begin monky part
+            local ok, data = pcall(function() return self.event_conn:receive() end)
+            if not ok or (ok and not data) then goto ERROR end
+            -- end monky part
             self:detach(function()
                 self:_handle_event(data)
             end, lcqhttp.log.error)
+        end
+        ::ERROR::
+        if self.recnn_interval then
+            lcqhttp.log.error('cannot establish connection to %s. try reconnecting in %ds',
+                self.event_uri, self.recnn_interval)
+            self.event_conn:close()
+            self:sleep(self.recnn_interval)
+            goto RECONNECT
+        else
+            lcqhttp.log.error('connection dropped')
+            os.exit(1)
         end
     end,
 

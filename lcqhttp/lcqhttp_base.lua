@@ -22,11 +22,12 @@ local LCQHTTP_BASE = lcqhttp.util.createClass {
         return self
     end,
 
-    -- 立即生成一个异步调用并且执行，该函数会立即返回
+    -- 立即生成一个异步调用并且执行，该函数会立即返回。剩余的代码继续执行并且把 http response 返回给插件（仅 http）
     detach = function(self, f, errfun)
         self.eventloop:wrap(function() xpcall(f, errfun) end)
     end,
 
+    -- yield 当前线程直到 secs 秒后返回
     sleep = function(self, secs)
         cqueues.sleep(secs)
     end
