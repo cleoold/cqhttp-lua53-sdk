@@ -10,19 +10,19 @@ local lcqhttp = {
     util = require 'lcqhttp.util'
 }
 
-local LCQHTTP_WS_CLIENT = lcqhttp.util.createClass ({
+local LcqhttpWsClient = lcqhttp.util.createClass ({
 
     -- 创建一个 websocket bot 客户端
     constructor = function(self, opt)
         self.__super.constructor(self, opt)
         self.event_uri = opt.ws_uri..'/event'
         self.api_uri = opt.ws_uri..'/api'
-        if opt.accessToken then
-            local t = http.util.encodeURI(opt.accessToken)
+        if opt.access_token then
+            local t = http.util.encodeURI(opt.access_token)
             self.event_uri = self.event_uri..'?access_token='..t
             self.api_uri = self.api_uri..'?access_token='..t
         end
-        self.accessToken = opt.accessToken
+        self.access_token = opt.access_token
         self.recnn_interval = opt.recnn_interval or lcqhttp.util.NULL
         self.conn_timeout = opt.conn_timeout or 5
         self.event_conn = lcqhttp.util.NULL
@@ -97,5 +97,5 @@ local LCQHTTP_WS_CLIENT = lcqhttp.util.createClass ({
 }, lcqhttp.lcqhttp_base.LCQHTTP_BASE)
 
 return {
-    LCQHTTP_WS_CLIENT = LCQHTTP_WS_CLIENT
+    LcqhttpWsClient = LcqhttpWsClient
 }

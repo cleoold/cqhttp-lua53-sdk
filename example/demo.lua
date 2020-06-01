@@ -4,11 +4,11 @@ local lcqhttp = {
 }
 
 -- 创建机器人
-local arora = lcqhttp.http.LCQHTTP_HTTP.new({
-    apiRoot = 'http://127.0.0.1:8764',
+local arora = lcqhttp.http.LcqhttpHttpServer.new({
+    api_root = 'http://127.0.0.1:8764',
     host = '127.0.0.1',
     port = '8765',
-    accessToken = 'accesstoken or nil', -- 可选项
+    access_token = 'accesstoken or nil', -- 可选项
     secret = 'secret or nil' -- 可选项
 })
 

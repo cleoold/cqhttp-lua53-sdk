@@ -1,4 +1,4 @@
-# cqhttp-lua-sdk
+# cqhttp-lua53-sdk
 
 [![License](https://img.shields.io/npm/l/cqhttp.svg)](LICENSE)
 ![LuaRocks](https://img.shields.io/luarocks/v/cleoold/lcqhttp?color=blue)
@@ -8,18 +8,18 @@ __推荐使用 wsl 来运行__
 
 __测试阶段__
 
-# 安装
-```
+## 安装
+```sh
 luarocks install --server=https://luarocks.org/dev lcqhttp
 ```
 如果安装 lua-http 时提示找不到 openssl 可以尝试安装包 `libssl-dev`.
 
-# 依赖项目
+## 依赖项目
 *   [lua-http](https://luarocks.org/modules/daurnimator/http)
 *   [lunajson](https://luarocks.org/modules/grafi/lunajson)
 *   [sha1](https://luarocks.org/modules/mpeterv/sha1)
 
-# 基本使用（HTTP）
+## 基本使用（HTTP）
 假设用户已经安装且配置了 [CQHTTP](https://cqhttp.cc/)，而且设置文件如下（仅保留有关联的部分）：
 ```js
 {
@@ -33,11 +33,11 @@ luarocks install --server=https://luarocks.org/dev lcqhttp
 ```
 使用 `lcqhttp.http` 模块，与它相应的 lua 配置如下：
 ```lua
-local arora = require 'lcqhttp.http'.LCQHTTP_HTTP.new({
-    apiRoot = 'http://127.0.0.1:8764',
+local arora = require 'lcqhttp.http'.LcqhttpHttpServer.new({
+    api_root = 'http://127.0.0.1:8764',
     host = '127.0.0.1',
     port = '8765',
-    accessToken = 'accesstoken or nil', -- 可选项
+    access_token = 'accesstoken or nil', -- 可选项
     secret = 'secret or nil' -- 可选项
 })
 
@@ -56,7 +56,7 @@ end)
 每一个回调会在接受事件后独立在 cqueue 的容器中运行，所以不会阻塞其他事件。  
 完整实例可以在 [这里](https://github.com/cleoold/cqhttp-lua53-sdk/blob/master/example/demo.lua) 看到，包含 `subscribe` 和 `api` 的使用方法。
 
-# Websocket 客户端
+## Websocket 客户端
 *   lua-http 的 ws 客户端不稳定（断线问题和 服务端离线时的 busy wait），所以不建议在生产环境使用（至少在 wsl 上不建议）
 *   https://github.com/daurnimator/lua-http/issues/140
 *   https://github.com/daurnimator/lua-http/issues/168
@@ -72,16 +72,16 @@ end)
 ```
 `lcqhttp.ws` 模块 可以创建 ws 客户端
 ```lua
-local beta = require 'lcqhttp.ws'.LCQHTTP_WS_CLIENT.new({
+local beta = require 'lcqhttp.ws'.LcqhttpWsClient.new({
     ws_uri = 'ws://127.0.0.1:6700',
-    accessToken = 'accesstoken or nil', -- 可选项
+    access_token = 'access_token or nil', -- 可选项
     recnn_interval = 1, -- 断线重连间隔时间。可选项，不填则不重连，掉线时退出程序
 })
 -- 其余方法相同
 ```
 
-# 其余
+## 其余
 项目目前代码比较简单（如果你能接受奇怪的类写法），有不满足需求的地方可以 monkey patch。文档 is coming
 
-# License
+## License
 MIT

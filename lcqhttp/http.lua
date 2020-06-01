@@ -14,20 +14,20 @@ local lcqhttp = {
 local LcqhttpApiRequester = lcqhttp.util.createClass {
     -- 用于调用 api 的类，可以单独使用
     constructor = function(self, opt)
-        self.apiRoot = opt.apiRoot
-        self.accessToken = lcqhttp.util.NULL
-        if opt.accessToken then
-            self.accessToken = 'Token '..opt.accessToken
+        self.api_root = opt.api_root
+        self.access_token = lcqhttp.util.NULL
+        if opt.access_token then
+            self.access_token = 'Token '..opt.access_token
         end
     end,
     -- 调用 api，返回结果
     api = function(self, apiname, content)
-        local path = self.apiRoot..'/'..apiname
+        local path = self.api_root..'/'..apiname
         local str = lunajson.encode(content)
         local task = lcqhttp.httpcontext.OutgoingHttpRequest.new(path, 'POST', str)
         task.req.headers:upsert('Content-Type', 'application/json')
-        if self.accessToken then
-            task.req.headers:upsert('Authorization', self.accessToken)
+        if self.access_token then
+            task.req.headers:upsert('Authorization', self.access_token)
         end
         task:go()
 
@@ -50,14 +50,14 @@ local LcqhttpApiRequester = lcqhttp.util.createClass {
     end,
 }
 
-local LCQHTTP_HTTP = lcqhttp.util.createClass ({
+local LcqhttpHttpServer = lcqhttp.util.createClass ({
 
     -- 创建一个 http bot 对象
     constructor = function(self, opt)
         self.__super.constructor(self, opt)
         self.apirequester = LcqhttpApiRequester.new({
-            apiRoot = opt.apiRoot,
-            accessToken = opt.accessToken
+            api_root = opt.api_root,
+            access_token = opt.access_token
         })
         self.secret = opt.secret or lcqhttp.util.NULL
         self.host = opt.host
@@ -136,5 +136,5 @@ local LCQHTTP_HTTP = lcqhttp.util.createClass ({
 
 return {
     LcqhttpApiRequester = LcqhttpApiRequester,
-    LCQHTTP_HTTP = LCQHTTP_HTTP
+    LcqhttpHttpServer = LcqhttpHttpServer
 }
