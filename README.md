@@ -3,16 +3,21 @@
 [![License](https://img.shields.io/npm/l/cqhttp.svg)](LICENSE)
 ![LuaRocks](https://img.shields.io/luarocks/v/cleoold/lcqhttp?color=blue)
 
+This project provides Lua5.3 bindings for [CQHTTP](https://cqhttp.cc/), an extension for [Coolq](cqp.cc). It encapsulates the methods coming from [lua-http](https://github.com/daurnimator/lua-http/) library to be able to directly respond to QQ bot events and call APIs to send messages. This project does not depend on nginx, java or other web servers so it can be served as a script. As the project relies on [cqueues](https://luarocks.org/modules/daurnimator/cqueues) (a dependency of lua-http), which is only runnable on UNIX, it cannot run on Windows. Theoretically the project runs on lua < 5.3 or jit environment.  
+__WSL is Recommended__
+
+
 此项目为 [酷Q](cqp.cc) 的 [CQHTTP](https://cqhttp.cc/) 插件的 Lua5.3 绑定。她封装了 [lua-http](https://github.com/daurnimator/lua-http/) 库的方法使其可以直接响应 QQ 机器人的事件与调用 API 来发送信息。本项目不依靠 nginx/java 等 web 服务器，可以直接作为脚本运行。因为项目依赖 [cqueues](https://luarocks.org/modules/daurnimator/cqueues) 来运行 （lua-http 的依赖），其只在 UNIX 上可用，所以不能在 Windows 上运行。理论上此项目也可以在 < 5.3 和 jit 环境下运行  
 __推荐使用 wsl 来运行__
 
-__测试阶段__
 
 ## 安装
 ```sh
 luarocks install --server=https://luarocks.org/dev lcqhttp
 ```
 如果安装 lua-http 时提示找不到 openssl 可以尝试安装包 `libssl-dev`.
+
+或者可以克隆这个仓库到本地，在自己的项目中复制 `lcqhttp` 文件夹。
 
 ## 依赖项目
 *   [lua-http](https://luarocks.org/modules/daurnimator/http)
