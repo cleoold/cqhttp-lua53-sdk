@@ -3,6 +3,11 @@
 [![License](https://img.shields.io/npm/l/cqhttp.svg)](LICENSE)
 ![LuaRocks](https://img.shields.io/luarocks/v/cleoold/lcqhttp?color=blue)
 
+## August 1. 2020
+This project is discontinued due to the [shutdown of CoolQ](https://www.zhihu.com/question/411466505).
+
+因为[酷Q的停运](https://www.zhihu.com/question/411466505)，这个项目已经失去意义且不再维护。在此感叹她的生不逢时。
+
 This project provides Lua5.3 bindings for [CQHTTP](https://cqhttp.cc/), an extension for [Coolq](cqp.cc). It encapsulates the methods coming from [lua-http](https://github.com/daurnimator/lua-http/) library to be able to directly respond to QQ bot events and call APIs to send messages. This project does not depend on nginx, java or other web servers so it can be served as a script. As the project relies on [cqueues](https://luarocks.org/modules/daurnimator/cqueues) (a dependency of lua-http), which is only runnable on UNIX, it cannot run on Windows. Theoretically the project runs on lua < 5.3 or jit environment.  
 __WSL is Recommended__
 
